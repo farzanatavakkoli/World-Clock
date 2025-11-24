@@ -29,28 +29,44 @@ function updateTime() {
   }
 }
 
+let selectedCityInterval = null;
+
 function updateCity(event) {
   let cityTimeZone = event.target.value;
+
   if (cityTimeZone === "current") {
     cityTimeZone = moment.tz.guess();
   }
+
   let cityName = cityTimeZone.replace("_", " ").split("/")[1];
-  let cityTime = moment().tz(cityTimeZone);
   let citiesElement = document.querySelector("#cities");
-  citiesElement.innerHTML = `
-    <div class="city" id="">
-      <div class="left">
-        <h2>${cityName}</h2>
-        <div class="date">${cityTime.format("MMMM Do YYYY")}</div>
+
+  function renderSelectedCity() {
+    let cityTime = moment().tz(cityTimeZone);
+    citiesElement.innerHTML = `
+      <div class="city">
+        <div class="left">
+          <h2>${cityName}</h2>
+          <div class="date">${cityTime.format("MMMM Do YYYY")}</div>
+        </div>
+        <div class="right">
+          <div class="time">${cityTime.format(
+            "h:mm:ss [<small>]A[</small>]"
+          )}</div>
+        </div>
       </div>
-      <div class="right">
-        <div class="time">${cityTime.format(
-          "h:mm:ss [<small>]A[</small>]"
-        )}</div>
-      </div>
-    </div>
-  `;
+      <a class="allCities" href="/">All cities</a>
+    `;
+  }
+
+  renderSelectedCity();
+
+  if (selectedCityInterval) {
+    clearInterval(selectedCityInterval);
+  }
+  selectedCityInterval = setInterval(renderSelectedCity, 1000);
 }
+
 updateTime();
 setInterval(updateTime, 1000);
 
